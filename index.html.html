@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Laundry App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Base Styles & Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f8f9fa;
+            --dark-color: #1e293b;
+            --gray-color: #94a3b8;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            
+            /* Light theme variables */
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --input-bg: #ffffff;
+        }
+        
+        /* Dark theme variables */
+        .dark-theme {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --border-color: #334155;
+            --input-bg: #1e293b;
+            --gray-color: #94a3b8;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 375px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* App Container */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+        
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .header-center {
+            flex: 2;
+            text-align: center;
+        }
+        
+        .header-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .app-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .back-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+        
+        /* Page Styling */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Login Page */
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 1rem;
+        }
+        
+        .login-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            background: rgba(67, 97, 238, 0.1);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+        
+        .login-subtitle {
+            color: var(--gray-color);
+            margin-bottom: 2.5rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        .input-group {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+        
+        .input-field:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+        }
+        
+        /* Button Styles */
+        .btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+        
+        /* Dashboard */
+        .welcome-message {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f0f4ff, #e6f7ff);
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .dark-theme .welcome-message {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .welcome-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .welcome-text {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+        }
+        
+        .user-details {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+        
+        .user-info h3 {
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-info p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-buttons {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .dashboard-btn {
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .dashboard-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-btn-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-btn-desc {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        /* Request Laundry Page */
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .select-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            transition: var(--transition);
+        }
+        
+        .select-field:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        /* Clothes Inventory Section - FIXED LAYOUT */
+        .clothes-inventory {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 2px solid var(--border-color);
+            overflow: hidden; /* Prevent overflow */
+        }
+        
+        .inventory-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .inventory-icon {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-right: 1rem;
+            background: rgba(67, 97, 238, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .inventory-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--text-color);
+        }
+        
+        .inventory-subtitle {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        /* Fixed Grid Layout - Now properly contained */
+        .clothes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .clothes-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            max-width: 100%;
+            overflow: hidden;
+        }
+        
+        .clothes-item:hover {
+            background-color: var(--bg-color);
+            border-color: var(--primary-color);
+        }
+        
+        .clothes-name {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            justify-content: center;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .clothes-icon {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 140px;
+        }
+        
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .quantity-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .quantity-input:focus {
+            outline: none;
+        }
+        
+        .inventory-summary {
+            background: linear-gradient(135deg, #f0f4ff, #e6f7ff);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .dark-theme .inventory-summary {
+            background: linear-gradient(135deg, #1e293b, #334155);
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .summary-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .total-items {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .summary-items {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.3rem;
+        }
+        
+        .confirmation-message {
+            background-color: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--text-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .confirmation-message.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Status Page */
+        .status-container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .status-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-right: 1rem;
+            background: rgba(67, 97, 238, 0.1);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            color: var(--text-color);
+        }
+        
+        .status-subtitle {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .status-steps {
+            position: relative;
+            padding: 1rem 0;
+        }
+        
+        .status-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .status-step:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-step.completed .step-icon {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .status-step.current .step-icon {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.2);
+        }
+        
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 2;
+            transition: var(--transition);
+        }
+        
+        .step-content {
+            margin-left: 1.2rem;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-color);
+        }
+        
+        .step-desc {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .status-connector {
+            position: absolute;
+            left: 25px;
+            top: 50px;
+            width: 2px;
+            height: calc(100% - 100px);
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+        
+        /* Notifications Page */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .notification-item {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: flex-start;
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+        
+        .notification-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .notification-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            background: rgba(67, 97, 238, 0.1);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .notification-text {
+            color: var(--gray-color);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .notification-time {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+        }
+        
+        .unread-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            align-self: center;
+            margin-left: 0.5rem;
+        }
+        
+        /* Schedule Page with Block Selection */
+        .schedule-container {
+            margin-bottom: 2rem;
+        }
+        
+        .schedule-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .schedule-title {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .schedule-subtitle {
+            color: var(--gray-color);
+            margin-bottom: 1rem;
+        }
+        
+        .block-selector {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .block-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+        
+        .block-btn {
+            padding: 0.6rem 1rem;
+            background-color: var(--border-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-color);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .block-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .block-btn:hover:not(.active) {
+            background-color: var(--gray-color);
+            color: white;
+        }
+        
+        .floor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .floor-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+        
+        .floor-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+        
+        .floor-card.today {
+            background: linear-gradient(135deg, #f0f4ff, #e6f7ff);
+            border-color: var(--primary-color);
+        }
+        
+        .dark-theme .floor-card.today {
+            background: linear-gradient(135deg, #1e293b, #334155);
+        }
+        
+        .floor-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .floor-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .floor-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+        
+        .floor-details {
+            margin-bottom: 0.5rem;
+        }
+        
+        .floor-date {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .floor-time {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+        
+        .floor-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-upcoming {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+        
+        .status-today {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #16a34a;
+        }
+        
+        .status-completed {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+        }
+        
+        .schedule-legend {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: var(--card-shadow);
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        
+        /* Footer */
+        .app-footer {
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-around;
+            position: sticky;
+            bottom: 0;
+            z-index: 100;
+        }
+        
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 0.5rem;
+            border-radius: 8px;
+            flex: 1;
+            max-width: 70px;
+        }
+        
+        .nav-btn:hover {
+            color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .nav-btn.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .nav-icon {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .nav-text {
+            font-size: 0.7rem;
+        }
+        
+        /* Error Message */
+        .error-message {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--text-color);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 375px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .dashboard-btn {
+                padding: 1.2rem;
+            }
+            
+            .floor-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .clothes-grid {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+            }
+            
+            .clothes-item {
+                padding: 0.6rem;
+            }
+            
+            .quantity-control {
+                max-width: 120px;
+            }
+            
+            .quantity-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+            
+            .quantity-input {
+                width: 35px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <button class="back-button" id="backButton" style="display: none;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            <div class="header-center">
+                <h1 class="app-title">Hostel Laundry App</h1>
+            </div>
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content Area -->
+        <main class="main-content" id="mainContent">
+            <!-- Login Page -->
+            <div class="page active" id="loginPage">
+                <div class="login-container">
+                    <div class="login-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h1 class="login-title">Hostel Laundry App</h1>
+                    <p class="login-subtitle">Manage your laundry services easily</p>
+                    
+                    <div class="input-group">
+                        <label for="registerNumber" class="input-label">Register Number</label>
+                        <input type="text" id="registerNumber" class="input-field" placeholder="Enter your register number" value="21BCE1001">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password" class="input-label">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" class="input-field" placeholder="Enter your password" value="password123">
+                            <button type="button" class="password-toggle" id="passwordToggle">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="block" class="input-label">Hostel Block</label>
+                        <select id="block" class="select-field">
+                            <option value="">Select your block</option>
+                            <option value="A" selected>Block A</option>
+                            <option value="B">Block B</option>
+                            <option value="C">Block C</option>
+                            <option value="D1">Block D1</option>
+                            <option value="D2">Block D2</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+                    </button>
+                    
+                    <div class="error-message" id="loginError">
+                        <i class="fas fa-exclamation-circle"></i> Please fill in all fields
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Home Dashboard -->
+            <div class="page" id="dashboardPage">
+                <div class="user-details">
+                    <div class="user-avatar" id="userAvatar">AJ</div>
+                    <div class="user-info">
+                        <h3 id="userName">Alex Johnson</h3>
+                        <p id="userDetails">Reg: 21BCE1001 | Block A | Floor 3</p>
+                    </div>
+                </div>
+                
+                <div class="welcome-message">
+                    <h2 class="welcome-title">Welcome back, Alex!</h2>
+                    <p class="welcome-text">Check your laundry status, request new service, or view the laundry schedule for your block.</p>
+                </div>
+                
+                <div class="dashboard-buttons">
+                    <a href="#" class="dashboard-btn" data-page="requestPage">
+                        <div class="dashboard-icon">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <h3 class="dashboard-btn-title">Request Laundry</h3>
+                        <p class="dashboard-btn-desc">Schedule a new laundry pickup</p>
+                    </a>
+                    
+                    <a href="#" class="dashboard-btn" data-page="statusPage">
+                        <div class="dashboard-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="dashboard-btn-title">Check Status</h3>
+                        <p class="dashboard-btn-desc">Track your laundry progress</p>
+                    </a>
+                    
+                    <a href="#" class="dashboard-btn" data-page="schedulePage">
+                        <div class="dashboard-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="dashboard-btn-title">Laundry Schedule</h3>
+                        <p class="dashboard-btn-desc">View floor-wise schedule</p>
+                    </a>
+                    
+                    <a href="#" class="dashboard-btn" data-page="notificationsPage">
+                        <div class="dashboard-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="dashboard-btn-title">Notifications</h3>
+                        <p class="dashboard-btn-desc">View recent updates</p>
+                        <span class="unread-indicator" id="notificationIndicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Request Laundry Page -->
+            <div class="page" id="requestPage">
+                <h2 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-color);">Request Laundry Service</h2>
+                
+                <div class="form-group">
+                    <label for="laundryType" class="form-label">Laundry Type</label>
+                    <select id="laundryType" class="select-field">
+                        <option value="normal" selected>Normal Service (3-4 days)</option>
+                        <option value="urgent">Urgent Service (1-2 days)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pickupDay" class="form-label">Pickup Day</label>
+                    <select id="pickupDay" class="select-field">
+                        <option value="monday">Monday</option>
+                        <option value="tuesday">Tuesday</option>
+                        <option value="wednesday" selected>Wednesday</option>
+                        <option value="thursday">Thursday</option>
+                        <option value="friday">Friday</option>
+                    </select>
+                </div>
+                
+                <!-- Clothes Inventory Section -->
+                <div class="clothes-inventory">
+                    <div class="inventory-header">
+                        <div class="inventory-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div>
+                            <h3 class="inventory-title">Clothes Inventory</h3>
+                            <p class="inventory-subtitle">Select the items you're giving for laundry</p>
+                        </div>
+                    </div>
+                    
+                    <div class="clothes-grid" id="clothesGrid">
+                        <!-- Clothes items will be generated by JavaScript -->
+                    </div>
+                    
+                    <div class="inventory-summary" id="inventorySummary">
+                        <div class="summary-header">
+                            <div class="summary-title">Items Summary</div>
+                            <div class="total-items" id="totalItems">0 items</div>
+                        </div>
+                        <div class="summary-items" id="summaryItems">
+                            No items selected yet
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="specialInstructions" class="form-label">Special Instructions (Optional)</label>
+                    <textarea id="specialInstructions" class="input-field" rows="3" placeholder="Any special instructions for the laundry staff (e.g., cold wash, delicate items, stain treatment requests)..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" id="submitRequestBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Laundry Request
+                </button>
+                
+                <div class="confirmation-message" id="confirmationMessage">
+                    <i class="fas fa-check-circle" style="color: var(--success-color); font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 0.5rem; color: var(--text-color);">Laundry Request Submitted Successfully!</h3>
+                    <p id="confirmationDetails" style="color: var(--text-color);">Your laundry will be picked up on Wednesday. You'll receive a notification when it's ready for collection.</p>
+                </div>
+            </div>
+            
+            <!-- Laundry Status Page -->
+            <div class="page" id="statusPage">
+                <div class="status-container">
+                    <div class="status-header">
+                        <div class="status-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h2 class="status-title">Laundry Status</h2>
+                            <p class="status-subtitle">Request ID: LAU20240327</p>
+                        </div>
+                    </div>
+                    
+                    <div class="status-steps">
+                        <div class="status-connector"></div>
+                        
+                        <div class="status-step completed">
+                            <div class="step-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="step-content">
+                                <h3 class="step-title">Request Submitted</h3>
+                                <p class="step-desc">March 27, 2024 - 10:30 AM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-step completed">
+                            <div class="step-icon">
+                                <i class="fas fa-truck-pickup"></i>
+                            </div>
+                            <div class="step-content">
+                                <h3 class="step-title">Collected</h3>
+                                <p class="step-desc">March 27, 2024 - 2:15 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-step current">
+                            <div class="step-icon">
+                                <i class="fas fa-soap"></i>
+                            </div>
+                            <div class="step-content">
+                                <h3 class="step-title">Washing</h3>
+                                <p class="step-desc">In progress - Expected completion: March 28</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-step">
+                            <div class="step-icon">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="step-content">
+                                <h3 class="step-title">Ready for Collection</h3>
+                                <p class="step-desc">Not yet ready</p>
+                            </div>
+                        </div>
+                        
+                        <div class="status-step">
+                            <div class="step-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="step-content">
+                                <h3 class="step-title">Delivered</h3>
+                                <p class="step-desc">Not yet delivered</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status-container">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-color);">Previous Laundry Requests</h3>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="color: var(--text-color);">Request ID: LAU20240320</span>
+                        <span style="color: var(--success-color); font-weight: 600;">Delivered</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+                        <span style="color: var(--text-color);">Request ID: LAU20240313</span>
+                        <span style="color: var(--success-color); font-weight: 600;">Delivered</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                        <span style="color: var(--text-color);">Request ID: LAU20240306</span>
+                        <span style="color: var(--success-color); font-weight: 600;">Delivered</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Laundry Schedule Page with Block Selection -->
+            <div class="page" id="schedulePage">
+                <div class="schedule-container">
+                    <div class="schedule-header">
+                        <h2 class="schedule-title">Laundry Schedule</h2>
+                        <p class="schedule-subtitle" id="scheduleSubtitle">Block A - Floor-wise Laundry Days (April 2024)</p>
+                        
+                        <div class="block-selector">
+                            <label class="form-label">Select Block</label>
+                            <div class="block-buttons" id="blockButtons">
+                                <button class="block-btn active" data-block="A">Block A</button>
+                                <button class="block-btn" data-block="B">Block B</button>
+                                <button class="block-btn" data-block="C">Block C</button>
+                                <button class="block-btn" data-block="D1">Block D1</button>
+                                <button class="block-btn" data-block="D2">Block D2</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="floor-grid" id="floorGrid">
+                        <!-- Floor cards will be generated by JavaScript -->
+                    </div>
+                    
+                    <div class="schedule-legend">
+                        <h3 class="legend-title">Schedule Legend</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #16a34a;"></div>
+                                <span>Today's Schedule</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #3b82f6;"></div>
+                                <span>Upcoming</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #6b7280;"></div>
+                                <span>Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Page -->
+            <div class="page" id="notificationsPage">
+                <h2 style="margin-bottom: 1.5rem; font-size: 1.8rem; color: var(--text-color);">Notifications</h2>
+                
+                <div class="notifications-list">
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-tshirt"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h3 class="notification-title">Laundry Ready for Collection</h3>
+                            <p class="notification-text">Your laundry from request LAU20240320 is ready for collection at the laundry counter.</p>
+                            <p class="notification-time">March 25, 2024 - 3:45 PM</p>
+                        </div>
+                        <div class="unread-indicator"></div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h3 class="notification-title">Pickup Scheduled</h3>
+                            <p class="notification-text">Your laundry pickup is scheduled for Wednesday between 2 PM - 4 PM.</p>
+                            <p class="notification-time">March 26, 2024 - 11:20 AM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h3 class="notification-title">Schedule Update</h3>
+                            <p class="notification-text">Your floor (Floor 3) laundry day is tomorrow. Please prepare your laundry.</p>
+                            <p class="notification-time">March 27, 2024 - 5:30 PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h3 class="notification-title">Request Confirmed</h3>
+                            <p class="notification-text">Your laundry request LAU20240313 has been completed and delivered.</p>
+                            <p class="notification-time">March 22, 2024 - 6:15 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Footer Navigation -->
+        <footer class="app-footer" id="appFooter" style="display: none;">
+            <button class="nav-btn active" data-page="dashboardPage">
+                <i class="fas fa-home nav-icon"></i>
+                <span class="nav-text">Home</span>
+            </button>
+            
+            <button class="nav-btn" data-page="requestPage">
+                <i class="fas fa-plus nav-icon"></i>
+                <span class="nav-text">Request</span>
+            </button>
+            
+            <button class="nav-btn" data-page="schedulePage">
+                <i class="fas fa-calendar-alt nav-icon"></i>
+                <span class="nav-text">Schedule</span>
+            </button>
+            
+            <button class="nav-btn" data-page="statusPage">
+                <i class="fas fa-clipboard-check nav-icon"></i>
+                <span class="nav-text">Status</span>
+            </button>
+            
+            <button class="nav-btn" data-page="notificationsPage">
+                <i class="fas fa-bell nav-icon"></i>
+                <span class="nav-text">Alerts</span>
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const requestPage = document.getElementById('requestPage');
+        const statusPage = document.getElementById('statusPage');
+        const schedulePage = document.getElementById('schedulePage');
+        const notificationsPage = document.getElementById('notificationsPage');
+        const mainContent = document.getElementById('mainContent');
+        const appFooter = document.getElementById('appFooter');
+        const backButton = document.getElementById('backButton');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        
+        // Login elements
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const loginError = document.getElementById('loginError');
+        const registerNumberInput = document.getElementById('registerNumber');
+        const passwordInput = document.getElementById('password');
+        const blockSelect = document.getElementById('block');
+        
+        // User details elements
+        const userAvatar = document.getElementById('userAvatar');
+        const userName = document.getElementById('userName');
+        const userDetails = document.getElementById('userDetails');
+        
+        // Navigation buttons
+        const navButtons = document.querySelectorAll('.nav-btn');
+        const dashboardButtons = document.querySelectorAll('.dashboard-btn');
+        const submitRequestBtn = document.getElementById('submitRequestBtn');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const confirmationDetails = document.getElementById('confirmationDetails');
+        
+        // Clothes inventory elements
+        const clothesGrid = document.getElementById('clothesGrid');
+        const totalItems = document.getElementById('totalItems');
+        const summaryItems = document.getElementById('summaryItems');
+        
+        // Schedule page elements
+        const floorGrid = document.getElementById('floorGrid');
+        const scheduleSubtitle = document.getElementById('scheduleSubtitle');
+        const blockButtons = document.querySelectorAll('.block-btn');
+        
+        // Current page state
+        let currentPage = 'loginPage';
+        let pageHistory = [];
+        let currentUser = null;
+        let currentBlock = 'A'; // Default block
+        
+        // Theme state
+        let isDarkTheme = false;
+        
+        // Clothes inventory data
+        const clothesItems = [
+            { id: 'tshirt', name: 'T-shirts', icon: 'fas fa-tshirt', max: 10, default: 0 },
+            { id: 'shirt', name: 'Shirts', icon: 'fas fa-tshirt', max: 10, default: 0 },
+            { id: 'jeans', name: 'Jeans', icon: 'fas fa-tshirt', max: 5, default: 0 },
+            { id: 'pants', name: 'Pants/Trousers', icon: 'fas fa-tshirt', max: 5, default: 0 },
+            { id: 'shorts', name: 'Shorts', icon: 'fas fa-tshirt', max: 5, default: 0 },
+            { id: 'jacket', name: 'Jackets', icon: 'fas fa-tshirt', max: 3, default: 0 },
+            { id: 'sweater', name: 'Sweaters', icon: 'fas fa-tshirt', max: 3, default: 0 },
+            { id: 'underwear', name: 'Undergarments', icon: 'fas fa-tshirt', max: 10, default: 0 },
+            { id: 'socks', name: 'Socks', icon: 'fas fa-socks', max: 10, default: 0 },
+            { id: 'towel', name: 'Towels', icon: 'fas fa-bath', max: 5, default: 0 },
+            { id: 'bedsheet', name: 'Bedsheets', icon: 'fas fa-bed', max: 3, default: 0 },
+            { id: 'pillowcase', name: 'Pillowcases', icon: 'fas fa-bed', max: 4, default: 0 },
+            { id: 'handkerchief', name: 'Handkerchiefs', icon: 'fas fa-square', max: 10, default: 0 },
+            { id: 'other', name: 'Other Items', icon: 'fas fa-plus', max: 5, default: 0 }
+        ];
+        
+        // Current clothes inventory state
+        let clothesInventory = {};
+        
+        // Floor schedule data for all blocks
+        const floorSchedules = {
+            'A': [
+                { floor: 1, day: "Monday", date: "Apr 1", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 2, day: "Monday", date: "Apr 1", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 3, day: "Tuesday", date: "Apr 2", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 4, day: "Tuesday", date: "Apr 2", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 5, day: "Wednesday", date: "Apr 3", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 6, day: "Wednesday", date: "Apr 3", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 7, day: "Thursday", date: "Apr 4", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 8, day: "Thursday", date: "Apr 4", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 9, day: "Friday", date: "Apr 5", time: "9:00 AM - 12:00 PM", status: "today" },
+                { floor: 10, day: "Friday", date: "Apr 5", time: "1:00 PM - 4:00 PM", status: "today" },
+                { floor: 11, day: "Monday", date: "Apr 8", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 12, day: "Monday", date: "Apr 8", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 13, day: "Tuesday", date: "Apr 9", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 14, day: "Tuesday", date: "Apr 9", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 15, day: "Wednesday", date: "Apr 10", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 16, day: "Wednesday", date: "Apr 10", time: "1:00 PM - 4:00 PM", status: "upcoming" }
+            ],
+            'B': [
+                { floor: 1, day: "Tuesday", date: "Apr 2", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 2, day: "Tuesday", date: "Apr 2", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 3, day: "Wednesday", date: "Apr 3", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 4, day: "Wednesday", date: "Apr 3", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 5, day: "Thursday", date: "Apr 4", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 6, day: "Thursday", date: "Apr 4", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 7, day: "Friday", date: "Apr 5", time: "9:00 AM - 12:00 PM", status: "today" },
+                { floor: 8, day: "Friday", date: "Apr 5", time: "1:00 PM - 4:00 PM", status: "today" },
+                { floor: 9, day: "Monday", date: "Apr 8", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 10, day: "Monday", date: "Apr 8", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 11, day: "Tuesday", date: "Apr 9", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 12, day: "Tuesday", date: "Apr 9", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 13, day: "Wednesday", date: "Apr 10", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 14, day: "Wednesday", date: "Apr 10", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 15, day: "Thursday", date: "Apr 11", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 16, day: "Thursday", date: "Apr 11", time: "1:00 PM - 4:00 PM", status: "upcoming" }
+            ],
+            'C': [
+                { floor: 1, day: "Wednesday", date: "Apr 3", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 2, day: "Wednesday", date: "Apr 3", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 3, day: "Thursday", date: "Apr 4", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 4, day: "Thursday", date: "Apr 4", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 5, day: "Friday", date: "Apr 5", time: "9:00 AM - 12:00 PM", status: "today" },
+                { floor: 6, day: "Friday", date: "Apr 5", time: "1:00 PM - 4:00 PM", status: "today" },
+                { floor: 7, day: "Monday", date: "Apr 8", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 8, day: "Monday", date: "Apr 8", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 9, day: "Tuesday", date: "Apr 9", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 10, day: "Tuesday", date: "Apr 9", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 11, day: "Wednesday", date: "Apr 10", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 12, day: "Wednesday", date: "Apr 10", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 13, day: "Thursday", date: "Apr 11", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 14, day: "Thursday", date: "Apr 11", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 15, day: "Friday", date: "Apr 12", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 16, day: "Friday", date: "Apr 12", time: "1:00 PM - 4:00 PM", status: "upcoming" }
+            ],
+            'D1': [
+                { floor: 1, day: "Thursday", date: "Apr 4", time: "9:00 AM - 12:00 PM", status: "completed" },
+                { floor: 2, day: "Thursday", date: "Apr 4", time: "1:00 PM - 4:00 PM", status: "completed" },
+                { floor: 3, day: "Friday", date: "Apr 5", time: "9:00 AM - 12:00 PM", status: "today" },
+                { floor: 4, day: "Friday", date: "Apr 5", time: "1:00 PM - 4:00 PM", status: "today" },
+                { floor: 5, day: "Monday", date: "Apr 8", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 6, day: "Monday", date: "Apr 8", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 7, day: "Tuesday", date: "Apr 9", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 8, day: "Tuesday", date: "Apr 9", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 9, day: "Wednesday", date: "Apr 10", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 10, day: "Wednesday", date: "Apr 10", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 11, day: "Thursday", date: "Apr 11", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 12, day: "Thursday", date: "Apr 11", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 13, day: "Friday", date: "Apr 12", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 14, day: "Friday", date: "Apr 12", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 15, day: "Monday", date: "Apr 15", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 16, day: "Monday", date: "Apr 15", time: "1:00 PM - 4:00 PM", status: "upcoming" }
+            ],
+            'D2': [
+                { floor: 1, day: "Friday", date: "Apr 5", time: "9:00 AM - 12:00 PM", status: "today" },
+                { floor: 2, day: "Friday", date: "Apr 5", time: "1:00 PM - 4:00 PM", status: "today" },
+                { floor: 3, day: "Monday", date: "Apr 8", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 4, day: "Monday", date: "Apr 8", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 5, day: "Tuesday", date: "Apr 9", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 6, day: "Tuesday", date: "Apr 9", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 7, day: "Wednesday", date: "Apr 10", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 8, day: "Wednesday", date: "Apr 10", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 9, day: "Thursday", date: "Apr 11", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 10, day: "Thursday", date: "Apr 11", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 11, day: "Friday", date: "Apr 12", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 12, day: "Friday", date: "Apr 12", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 13, day: "Monday", date: "Apr 15", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 14, day: "Monday", date: "Apr 15", time: "1:00 PM - 4:00 PM", status: "upcoming" },
+                { floor: 15, day: "Tuesday", date: "Apr 16", time: "9:00 AM - 12:00 PM", status: "upcoming" },
+                { floor: 16, day: "Tuesday", date: "Apr 16", time: "1:00 PM - 4:00 PM", status: "upcoming" }
+            ]
+        };
+        
+        // Show a specific page and hide others
+        function showPage(pageId) {
+            // Add current page to history before changing
+            if (currentPage !== pageId) {
+                pageHistory.push(currentPage);
+            }
+            
+            // Update current page
+            currentPage = pageId;
+            
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show the requested page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update footer navigation active state
+            navButtons.forEach(btn => {
+                if (btn.getAttribute('data-page') === pageId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Show/hide footer and back button based on page
+            if (pageId === 'loginPage') {
+                appFooter.style.display = 'none';
+                backButton.style.display = 'none';
+            } else {
+                appFooter.style.display = 'flex';
+                
+                // Show back button only if not on dashboard
+                if (pageId === 'dashboardPage') {
+                    backButton.style.display = 'none';
+                } else {
+                    backButton.style.display = 'flex';
+                }
+            }
+            
+            // Scroll to top when changing pages
+            mainContent.scrollTop = 0;
+            
+            // If showing schedule page, render the floor schedule
+            if (pageId === 'schedulePage') {
+                renderFloorSchedule(currentBlock);
+                updateScheduleSubtitle(currentBlock);
+            }
+            
+            // If showing request page, render the clothes inventory
+            if (pageId === 'requestPage') {
+                renderClothesInventory();
+            }
+        }
+        
+        // Go back to previous page
+        function goBack() {
+            if (pageHistory.length > 0) {
+                const previousPage = pageHistory.pop();
+                showPage(previousPage);
+            } else {
+                // If no history, go to dashboard
+                showPage('dashboardPage');
+            }
+        }
+        
+        // Toggle theme between dark and light
+        function toggleTheme() {
+            isDarkTheme = !isDarkTheme;
+            
+            if (isDarkTheme) {
+                document.body.classList.add('dark-theme');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                themeToggle.setAttribute('title', 'Switch to light theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                themeToggle.setAttribute('title', 'Switch to dark theme');
+            }
+            
+            // Save theme preference to localStorage
+            localStorage.setItem('laundryAppTheme', isDarkTheme ? 'dark' : 'light');
+        }
+        
+        // Handle login
+        function handleLogin() {
+            const registerNumber = registerNumberInput.value.trim();
+            const password = passwordInput.value.trim();
+            const block = blockSelect.value;
+            
+            // Simple validation
+            if (!registerNumber || !password || !block) {
+                loginError.textContent = "Please fill in all fields";
+                loginError.classList.add('show');
+                return;
+            }
+            
+            // Dummy authentication - in a real app, this would check against a database
+            if (password.length < 6) {
+                loginError.textContent = "Password must be at least 6 characters";
+                loginError.classList.add('show');
+                return;
+            }
+            
+            // Hide error message
+            loginError.classList.remove('show');
+            
+            // Store user info
+            currentUser = {
+                registerNumber: registerNumber,
+                name: getStudentName(registerNumber),
+                block: block,
+                floor: getFloorFromRegister(registerNumber)
+            };
+            
+            // Update user details on dashboard
+            updateUserDetails();
+            
+            // Set current block for schedule
+            currentBlock = block;
+            
+            // Navigate to dashboard
+            showPage('dashboardPage');
+            
+            // Reset page history when logging in
+            pageHistory = [];
+            
+            // Add a login notification
+            addNotification(
+                'Login Successful',
+                `Welcome back to Hostel Laundry App! You're logged in from Block ${block}.`,
+                'fas fa-sign-in-alt'
+            );
+        }
+        
+        // Generate student name from register number (dummy function)
+        function getStudentName(regNumber) {
+            // This would normally come from a database
+            const names = {
+                "21BCE1001": "Alex Johnson",
+                "21BCE1002": "Maria Garcia",
+                "21BCE1003": "David Smith",
+                "21BCE1004": "Sarah Williams",
+                "21BCE1005": "James Brown"
+            };
+            
+            return names[regNumber] || "Student";
+        }
+        
+        // Generate floor from register number (dummy function)
+        function getFloorFromRegister(regNumber) {
+            // Simple algorithm to determine floor from register number
+            const lastTwoDigits = parseInt(regNumber.slice(-2));
+            return (lastTwoDigits % 16) + 1;
+        }
+        
+        // Update user details on dashboard
+        function updateUserDetails() {
+            if (!currentUser) return;
+            
+            // Set user avatar initials
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            userAvatar.textContent = initials;
+            
+            // Set user name
+            userName.textContent = currentUser.name;
+            
+            // Set user details
+            userDetails.textContent = `Reg: ${currentUser.registerNumber} | Block ${currentUser.block} | Floor ${currentUser.floor}`;
+        }
+        
+        // Render clothes inventory
+        function renderClothesInventory() {
+            if (!clothesGrid) return;
+            
+            clothesGrid.innerHTML = '';
+            
+            // Initialize inventory if not already done
+            if (Object.keys(clothesInventory).length === 0) {
+                clothesItems.forEach(item => {
+                    clothesInventory[item.id] = item.default;
+                });
+            }
+            
+            clothesItems.forEach(item => {
+                const clothesItem = document.createElement('div');
+                clothesItem.className = 'clothes-item';
+                clothesItem.innerHTML = `
+                    <div class="clothes-name">
+                        <i class="${item.icon} clothes-icon"></i>
+                        <span>${item.name}</span>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <input type="text" class="quantity-input" id="input-${item.id}" value="${clothesInventory[item.id]}" data-id="${item.id}" readonly>
+                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                    </div>
+                `;
+                
+                clothesGrid.appendChild(clothesItem);
+            });
+            
+            // Update summary
+            updateInventorySummary();
+            
+            // Add event listeners for quantity buttons
+            document.querySelectorAll('.quantity-btn').forEach(button => {
+                button.addEventListener('click', handleQuantityChange);
+            });
+        }
+        
+        // Handle quantity change for clothes items
+        function handleQuantityChange(e) {
+            const itemId = e.target.getAttribute('data-id');
+            const action = e.target.getAttribute('data-action');
+            const max = clothesItems.find(item => item.id === itemId).max;
+            
+            if (action === 'increase') {
+                if (clothesInventory[itemId] < max) {
+                    clothesInventory[itemId]++;
+                }
+            } else if (action === 'decrease') {
+                if (clothesInventory[itemId] > 0) {
+                    clothesInventory[itemId]--;
+                }
+            }
+            
+            // Update input value
+            document.getElementById(`input-${itemId}`).value = clothesInventory[itemId];
+            
+            // Update summary
+            updateInventorySummary();
+        }
+        
+        // Update inventory summary
+        function updateInventorySummary() {
+            let total = 0;
+            let itemsList = [];
+            
+            // Calculate total and create list
+            for (const [itemId, quantity] of Object.entries(clothesInventory)) {
+                if (quantity > 0) {
+                    total += quantity;
+                    const itemName = clothesItems.find(item => item.id === itemId).name;
+                    itemsList.push(`${quantity} ${itemName}`);
+                }
+            }
+            
+            // Update total items
+            totalItems.textContent = `${total} item${total !== 1 ? 's' : ''}`;
+            
+            // Update summary items list
+            if (itemsList.length > 0) {
+                summaryItems.innerHTML = itemsList.map(item => 
+                    `<div class="summary-item"><span>${item.split(' ')[0]}</span><span>${item.split(' ').slice(1).join(' ')}</span></div>`
+                ).join('');
+            } else {
+                summaryItems.innerHTML = 'No items selected yet';
+            }
+        }
+        
+        // Update schedule subtitle based on selected block
+        function updateScheduleSubtitle(block) {
+            if (!scheduleSubtitle) return;
+            scheduleSubtitle.textContent = `Block ${block} - Floor-wise Laundry Days (April 2024)`;
+        }
+        
+        // Render floor schedule for selected block
+        function renderFloorSchedule(block) {
+            if (!floorGrid) return;
+            
+            floorGrid.innerHTML = '';
+            
+            // Get schedule for selected block
+            const schedule = floorSchedules[block] || floorSchedules['A'];
+            
+            schedule.forEach(floor => {
+                const floorCard = document.createElement('div');
+                floorCard.className = `floor-card ${floor.status === 'today' ? 'today' : ''}`;
+                
+                let statusClass = '';
+                let statusText = '';
+                
+                switch(floor.status) {
+                    case 'today':
+                        statusClass = 'status-today';
+                        statusText = 'Today';
+                        break;
+                    case 'upcoming':
+                        statusClass = 'status-upcoming';
+                        statusText = 'Upcoming';
+                        break;
+                    case 'completed':
+                        statusClass = 'status-completed';
+                        statusText = 'Completed';
+                        break;
+                }
+                
+                floorCard.innerHTML = `
+                    <div class="floor-header">
+                        <div class="floor-icon">${floor.floor}</div>
+                        <div class="floor-name">Floor ${floor.floor}</div>
+                    </div>
+                    <div class="floor-details">
+                        <div class="floor-date">${floor.day}, ${floor.date}</div>
+                        <div class="floor-time">${floor.time}</div>
+                    </div>
+                    <span class="floor-status ${statusClass}">${statusText}</span>
+                `;
+                
+                floorGrid.appendChild(floorCard);
+            });
+        }
+        
+        // Handle block selection in schedule page
+        function handleBlockSelection(block) {
+            currentBlock = block;
+            
+            // Update active button
+            blockButtons.forEach(btn => {
+                if (btn.getAttribute('data-block') === block) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update schedule
+            renderFloorSchedule(block);
+            updateScheduleSubtitle(block);
+        }
+        
+        // Submit laundry request
+        function submitRequest() {
+            if (!currentUser) {
+                showPage('loginPage');
+                return;
+            }
+            
+            // Get selected values
+            const laundryType = document.getElementById('laundryType').value;
+            const pickupDay = document.getElementById('pickupDay').value;
+            const specialInstructions = document.getElementById('specialInstructions').value;
+            
+            // Get clothes summary
+            let totalClothes = 0;
+            let clothesList = [];
+            
+            for (const [itemId, quantity] of Object.entries(clothesInventory)) {
+                if (quantity > 0) {
+                    totalClothes += quantity;
+                    const itemName = clothesItems.find(item => item.id === itemId).name;
+                    clothesList.push(`${quantity} ${itemName}`);
+                }
+            }
+            
+            // Check if at least one item is selected
+            if (totalClothes === 0) {
+                alert('Please select at least one item for laundry');
+                return;
+            }
+            
+            // Show confirmation message with details
+            const clothesSummary = clothesList.join(', ');
+            confirmationDetails.innerHTML = `
+                Your laundry request has been submitted with the following details:<br><br>
+                <strong>Laundry Type:</strong> ${laundryType === 'normal' ? 'Normal Service' : 'Urgent Service'}<br>
+                <strong>Pickup Day:</strong> ${pickupDay}<br>
+                <strong>Total Items:</strong> ${totalClothes} items<br>
+                <strong>Items List:</strong> ${clothesSummary}<br><br>
+                You'll receive a notification when your laundry is ready for collection.
+            `;
+            
+            confirmationMessage.classList.add('show');
+            
+            // After 4 seconds, navigate to status page
+            setTimeout(() => {
+                showPage('statusPage');
+                confirmationMessage.classList.remove('show');
+                
+                // Update status page with new request info
+                const statusTitle = document.querySelector('.status-title');
+                const statusSubtitle = document.querySelector('.status-subtitle');
+                
+                // Generate a new request ID
+                const requestId = 'LAU' + new Date().getFullYear() + 
+                                 ('0' + (new Date().getMonth() + 1)).slice(-2) + 
+                                 ('0' + new Date().getDate()).slice(-2) + '001';
+                
+                statusSubtitle.textContent = `Request ID: ${requestId}`;
+                
+                // Reset status steps to "Request Submitted"
+                const statusSteps = document.querySelectorAll('.status-step');
+                statusSteps.forEach((step, index) => {
+                    step.classList.remove('completed', 'current');
+                    if (index === 0) {
+                        step.classList.add('completed');
+                    }
+                    if (index === 1) {
+                        step.classList.add('current');
+                    }
+                });
+                
+                // Add a notification for the new request
+                addNotification(
+                    'Laundry Request Submitted',
+                    `Your laundry request (${totalClothes} items) has been submitted. Pickup scheduled for ${pickupDay}.`,
+                    'fas fa-check-circle'
+                );
+                
+                // Clear form and reset inventory
+                document.getElementById('specialInstructions').value = '';
+                clothesInventory = {};
+                renderClothesInventory();
+            }, 4000);
+        }
+        
+        // Add a new notification
+        function addNotification(title, text, iconClass) {
+            const notificationsList = document.querySelector('.notifications-list');
+            const notificationTime = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'notification-item';
+            notificationItem.innerHTML = `
+                <div class="notification-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="notification-content">
+                    <h3 class="notification-title">${title}</h3>
+                    <p class="notification-text">${text}</p>
+                    <p class="notification-time">${notificationTime}</p>
+                </div>
+                <div class="unread-indicator"></div>
+            `;
+            
+            // Add to the top of the list
+            notificationsList.prepend(notificationItem);
+            
+            // Show notification indicator
+            document.getElementById('notificationIndicator').style.display = 'block';
+        }
+        
+        // Toggle password visibility
+        function togglePasswordVisibility() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle eye icon
+            const eyeIcon = passwordToggle.querySelector('i');
+            if (type === 'password') {
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            } else {
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            }
+        }
+        
+        // Event Listeners
+        loginBtn.addEventListener('click', handleLogin);
+        
+        backButton.addEventListener('click', goBack);
+        
+        // Theme toggle
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // Password toggle
+        passwordToggle.addEventListener('click', togglePasswordVisibility);
+        
+        // Navigation button clicks
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const pageId = button.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+        
+        // Dashboard button clicks
+        dashboardButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const pageId = button.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+        
+        // Block selection in schedule page
+        blockButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const block = button.getAttribute('data-block');
+                handleBlockSelection(block);
+            });
+        });
+        
+        // Submit request button
+        submitRequestBtn.addEventListener('click', submitRequest);
+        
+        // Simulate pressing enter on login fields
+        registerNumberInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+        
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                blockSelect.focus();
+            }
+        });
+        
+        blockSelect.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default values
+            registerNumberInput.value = "21BCE1001";
+            passwordInput.value = "password123";
+            blockSelect.value = "A";
+            
+            // Show notification indicator
+            document.getElementById('notificationIndicator').style.display = 'block';
+            
+            // Focus on the register number field on load
+            registerNumberInput.focus();
+            
+            // Load saved theme preference
+            const savedTheme = localStorage.getItem('laundryAppTheme');
+            if (savedTheme === 'dark') {
+                isDarkTheme = true;
+                document.body.classList.add('dark-theme');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            }
+            
+            // Pre-render floor schedule
+            renderFloorSchedule(currentBlock);
+            updateScheduleSubtitle(currentBlock);
+            
+            // Initialize clothes inventory
+            renderClothesInventory();
+        });
+    </script>
+</body>
+</html>
